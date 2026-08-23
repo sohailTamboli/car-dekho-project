@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Cars - Car Dekho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* EXACT CSS FROM YOUR INDEX PAGE */
+        body { margin: 0;  background: #f4f4f4; }
+        
+        .navbar {
+            display: flex;          
+            align-items: center;   
+            gap: 20px;              
+            padding: 15px;
+            background-color: #f8f9fa; 
+        }
+
+        .navbar a {
+            text-decoration: none;  
+            color: black;
+            font-weight: 500;      
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            white-space: nowrap; 
+        }
+
+        .anchor {
+            display: flex;
+            gap: 20px;
+            margin-left: auto; 
+        }
+
+        .navbar .fa-bars {
+            display: none; 
+        }
+
+        @media (max-width: 768px) {
+            
+            .navbar .fa-bars {
+                display: block; 
+                cursor: pointer; 
+                font-size: 24px;
+            }
+
+            .anchor {
+                display: none; 
+                flex-direction: column; 
+                position: absolute;
+                top: 60px; 
+                background: white;
+                width: 100%;
+                padding: 20px;
+                left: 0;
+            }
+            
+            .anchor.active {
+                display: flex; 
+            }
+        }
+
+        /* COMPARE PAGE CONTENT */
+        .compare-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .compare-title { text-align: center; margin-bottom: 30px; font-size: 2rem; }
+        
+        .compare-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .select-group { width: 45%; }
+        .select-group label { display: block; font-weight: bold; margin-bottom: 8px; }
+        .select-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            background: #f9f9f9;
+        }
+        
+        .compare-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .compare-btn:hover { background: #0056b3; }
+
+        /* Result Section (Hidden initially) */
+        .result-section {
+            margin-top: 40px;
+            display: none; /* Hidden until Compare is clicked */
+        }
+
+        .compare-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+        .compare-table th, .compare-table td { border: 1px solid #ddd; padding: 15px; text-align: center; }
+        .compare-table th { background: #f8f9fa; font-size: 1.1rem; }
+        .compare-table td:first-child { font-weight: bold; background: #fcfcfc; text-align: left; width: 20%; }
+
+        .winner { background-color: #d4edda !important; color: #155724; font-weight: bold; }
+
+        /* Conclusion Boxes (Pros & Cons) */
+        .conclusion-box {
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 20px;
+            background: #f0f8ff;
+            margin-top: 30px;
+        }
+        .conclusion-box h2 { color: #007bff; margin-top: 0; }
+        .conclusion-box p { font-size: 1rem; line-height: 1.6; color: #333; }
+
+        .pros-cons-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .pros-cons-col {
+            flex: 1;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 0.95rem;
+        }
+        .pros-cons-col h3 { margin-top: 0; margin-bottom: 10px; }
+        .pros-cons-col ul { padding-left: 20px; margin: 0; }
+        .pros-cons-col li { margin-bottom: 8px; }
+
+        .pros-car1 { background: #e8f5e9; border: 1px solid #a5d6a7; }
+        .cons-car1 { background: #ffebee; border: 1px solid #ef9a9a; }
+        .pros-car2 { background: #e3f2fd; border: 1px solid #90caf9; }
+        .cons-car2 { background: #fff3e0; border: 1px solid #ffcc80; }
+
+        .conclusion-final {
+            margin-top: 20px;
+            border-top: 2px solid #ddd;
+            padding-top: 20px;
+        }
+
+        @media (max-width: 600px) { .compare-row { flex-direction: column; } .select-group { width: 100%; } .pros-cons-container { flex-direction: column; } }
+
+        /* --- AESTHETIC UPGRADE: FONTS --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        h1, h2, h3, .brand-title, .featured-cars h2, .contact-title, .compare-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        /* --- DARK MODE STYLES (Added by me) --- */
+        body.dark-mode {
+            background: #121212;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .navbar {
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #333;
+        }
+
+        body.dark-mode .navbar a {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .compare-container {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            border-color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        body.dark-mode .compare-title {
+            color: #e0e0e0;
+        }
+
+        /* Selects */
+        body.dark-mode .select-group select {
+            background: #2a2a2a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .select-group label {
+            color: #e0e0e0;
+        }
+
+        /* Compare Table */
+        body.dark-mode .compare-table th {
+            background: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .compare-table td {
+            border-color: #333;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .compare-table td:first-child {
+            background: #222;
+            color: #e0e0e0;
+        }
+
+        /* Winner Highlighting */
+        body.dark-mode .winner {
+            background-color: #1e3a2f !important;
+            color: #4ade80 !important;
+        }
+
+        /* Conclusion Box */
+        body.dark-mode .conclusion-box {
+            background: #1e1e1e;
+            border-color: #007bff;
+        }
+
+        body.dark-mode .conclusion-box p {
+            color: #e0e0e0;
+        }
+
+        /* Pros and Cons Boxes */
+        body.dark-mode .pros-car1 { background: #1e3a2f; border: 1px solid #2a5a4a; color: #4ade80; }
+        body.dark-mode .cons-car1 { background: #3a1e1e; border: 1px solid #5a2a2a; color: #f87171; }
+        body.dark-mode .pros-car2 { background: #1e2a3a; border: 1px solid #2a4a5a; color: #60a5fa; }
+        body.dark-mode .cons-car2 { background: #3a2e1e; border: 1px solid #5a4a2a; color: #fbbf24; }
+
+        body.dark-mode .pros-cons-col h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .conclusion-final {
+            border-top-color: #333;
+        }
+    </style>
+</head>
+<body>
+    
+
+    <!-- Navbar (EXACT STRUCTURE AS INDEX PAGE) -->
+    <nav class="navbar">
+        <i class="fas fa-car" style="color: red;"></i> Car Dekho
+        <i class="fas fa-bars"></i>
+        <div class="anchor">
+            <a href="index.html">Home</a>
+            <a href="cars.html">Cars</a>
+            <a href="compare.html" style="color: #007bff; font-weight: bold;">Compare</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+
+    <div class="compare-container">
+        <h1 class="compare-title">Compare Cars</h1>
+        
+        <div class="compare-row">
+            <div class="select-group">
+                <label for="brand1">Select Brand 1</label>
+                <select id="brand1" onchange="populateModels('brand1', 'model1')">
+                    <option value="">-- Select Brand --</option>
+                    <option value="tata">Tata</option>
+                    <option value="bmw">BMW</option>
+                    <option value="suzuki">Suzuki</option>
+                    <option value="mahindra">Mahindra</option>
+                    <option value="toyota">Toyota</option>
+                    <option value="hyundai">Hyundai</option>
+                    <option value="honda">Honda</option>
+                    <option value="mercedes">Mercedes</option>
+                    <option value="audi">Audi</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label for="model1">Select Model</label>
+                <select id="model1">
+                    <option value="">-- Select Model --</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="compare-row">
+            <div class="select-group">
+                <label for="brand2">Select Brand 2</label>
+                <select id="brand2" onchange="populateModels('brand2', 'model2')">
+                    <option value="">-- Select Brand --</option>
+                    <option value="tata">Tata</option>
+                    <option value="bmw">BMW</option>
+                    <option value="suzuki">Suzuki</option>
+                    <option value="mahindra">Mahindra</option>
+                    <option value="toyota">Toyota</option>
+                    <option value="hyundai">Hyundai</option>
+                    <option value="honda">Honda</option>
+                    <option value="mercedes">Mercedes</option>
+                    <option value="audi">Audi</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label for="model2">Select Model</label>
+                <select id="model2">
+                    <option value="">-- Select Model --</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="compare-btn" onclick="startComparison()">Compare Now</button>
+
+        <!-- Result Section (Appears here) -->
+        <div class="result-section" id="resultSection">
+            <table class="compare-table" id="comparisonTable">
+                <!-- Table filled by JavaScript -->
+            </table>
+
+            <div class="conclusion-box" id="conclusionBox">
+                <!-- Conclusion filled by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- DARK MODE JAVASCRIPT (Added by me) -->
+    <script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+    <script>
+        // A simple database of brand and models (Used for the dropdowns)
+        const allCarsList = {
+            tata: ["Tata Nexon", "Tata Harrier", "Tata Safari"],
+            bmw: ["BMW M5 CS", "BMW X7", "BMW M8"],
+            suzuki: ["Suzuki Ciaz", "Suzuki Grand Vitara", "Suzuki Baleno"],
+            mahindra: ["Mahindra Scorpio N", "Mahindra XUV700", "Mahindra Alturas G4"],
+            toyota: ["Toyota Fortuner Legender", "Toyota Hilux", "Toyota Land Cruiser 300"],
+            hyundai: ["Hyundai Verna", "Hyundai Santa Fe", "Hyundai Elantra"],
+            honda: ["Honda Elevate", "Honda Accord", "Honda Pilot"],
+            mercedes: ["Mercedes GLS", "Mercedes S-Class", "Mercedes AMG GT"],
+            audi: ["Audi RS5", "Audi Q7", "Audi R8"]
+        };
+
+        // Database with full comparison data (Maintenance, Parts, Owner Type)
+        const comparisonData = {
+            "Tata Nexon": { price: "$12,000", maintenance: "Low", parts: "Cheap", ownerType: "Self-Driven", reliability: "Good", offRoad: "Average", specs: ["Engine: 1.2L Turbo Petrol", "BHP: 118 bhp", "Fuel: Petrol"] },
+            "Tata Harrier": { price: "$18,000", maintenance: "Medium", parts: "Moderate", ownerType: "Self-Driven", reliability: "Good", offRoad: "Good", specs: ["Engine: 2.0L Diesel", "BHP: 168 bhp", "Fuel: Diesel"] },
+            "Tata Safari": { price: "$22,000", maintenance: "Medium", parts: "Moderate", ownerType: "Self-Driven", reliability: "Good", offRoad: "Good", specs: ["Engine: 2.0L Diesel", "BHP: 168 bhp", "Fuel: Diesel"] },
+            
+            "BMW M5 CS": { price: "$142,000", maintenance: "Very High", parts: "Very Expensive", ownerType: "Driver-Oriented", reliability: "Average", offRoad: "Poor", specs: ["Engine: 4.4L Twin-Turbo V8", "BHP: 627 bhp", "Fuel: Petrol"] },
+            "BMW X7": { price: "$78,000", maintenance: "High", parts: "Expensive", ownerType: "Chauffeur-Oriented", reliability: "Average", offRoad: "Average", specs: ["Engine: 3.0L Turbo", "BHP: 375 bhp", "Fuel: Petrol"] },
+            "BMW M8": { price: "$130,000", maintenance: "Very High", parts: "Very Expensive", ownerType: "Driver-Oriented", reliability: "Average", offRoad: "Poor", specs: ["Engine: 4.4L Twin-Turbo V8", "BHP: 617 bhp", "Fuel: Petrol"] },
+            
+            "Suzuki Ciaz": { price: "$12,500", maintenance: "Very Low", parts: "Cheap", ownerType: "Self-Driven", reliability: "Excellent", offRoad: "Poor", specs: ["Engine: 1.5L Petrol", "BHP: 103 bhp", "Fuel: Petrol"] },
+            "Suzuki Grand Vitara": { price: "$20,000", maintenance: "Low", parts: "Cheap", ownerType: "Self-Driven", reliability: "Excellent", offRoad: "Good", specs: ["Engine: 1.5L Petrol / Hybrid", "BHP: 102 bhp", "Fuel: Petrol/Hybrid"] },
+            "Suzuki Baleno": { price: "$10,000", maintenance: "Very Low", parts: "Cheap", ownerType: "Self-Driven", reliability: "Excellent", offRoad: "Poor", specs: ["Engine: 1.2L Petrol", "BHP: 88 bhp", "Fuel: Petrol"] },
+            
+            "Mahindra Scorpio N": { price: "$22,000", maintenance: "Medium", parts: "Moderate", ownerType: "Self-Driven", reliability: "Good", offRoad: "Great", specs: ["Engine: 2.2L Diesel", "BHP: 172 bhp", "Fuel: Diesel"] },
+            "Mahindra XUV700": { price: "$26,000", maintenance: "Medium", parts: "Moderate", ownerType: "Self-Driven", reliability: "Good", offRoad: "Good", specs: ["Engine: 2.0L Petrol / 2.2L Diesel", "BHP: 197 bhp", "Fuel: Petrol/Diesel"] },
+            "Mahindra Alturas G4": { price: "$33,000", maintenance: "High", parts: "Expensive", ownerType: "Chauffeur-Oriented", reliability: "Good", offRoad: "Good", specs: ["Engine: 2.2L Diesel", "BHP: 178 bhp", "Fuel: Diesel"] },
+            
+            "Toyota Fortuner Legender": { price: "$45,000", maintenance: "Medium", parts: "Moderate", ownerType: "Self-Driven", reliability: "Excellent", offRoad: "Great", specs: ["Engine: 2.8L Diesel", "BHP: 201 bhp", "Fuel: Diesel"] },
+            "Toyota Hilux": { price: "$38,000", maintenance: "Medium", parts: "Moderate", ownerType: "Self-Driven", reliability: "Excellent", offRoad: "Great", specs: ["Engine: 2.8L Diesel", "BHP: 201 bhp", "Fuel: Diesel"] },
+            "Toyota Land Cruiser 300": { price: "$85,000", maintenance: "High", parts: "Expensive", ownerType: "Chauffeur-Oriented", reliability: "Excellent", offRoad: "Great", specs: ["Engine: 3.5L V6 Petrol", "BHP: 409 bhp", "Fuel: Petrol"] },
+            
+            "Hyundai Verna": { price: "$18,000", maintenance: "Low", parts: "Cheap", ownerType: "Self-Driven", reliability: "Good", offRoad: "Poor", specs: ["Engine: 1.5L Petrol / Diesel", "BHP: 113 bhp", "Fuel: Petrol/Diesel"] },
+            "Hyundai Santa Fe": { price: "$40,000", maintenance: "Medium", parts: "Moderate", ownerType: "Self-Driven", reliability: "Good", offRoad: "Good", specs: ["Engine: 2.5L Petrol", "BHP: 277 bhp", "Fuel: Petrol"] },
+            "Hyundai Elantra": { price: "$24,000", maintenance: "Low", parts: "Cheap", ownerType: "Self-Driven", reliability: "Good", offRoad: "Poor", specs: ["Engine: 2.0L Petrol", "BHP: 147 bhp", "Fuel: Petrol"] },
+            
+            "Honda Elevate": { price: "$18,500", maintenance: "Low", parts: "Cheap", ownerType: "Self-Driven", reliability: "Good", offRoad: "Average", specs: ["Engine: 1.5L Petrol", "BHP: 119 bhp", "Fuel: Petrol"] },
+            "Honda Accord": { price: "$35,000", maintenance: "Medium", parts: "Moderate", ownerType: "Self-Driven", reliability: "Good", offRoad: "Poor", specs: ["Engine: 2.0L Hybrid", "BHP: 252 bhp", "Fuel: Hybrid"] },
+            "Honda Pilot": { price: "$42,000", maintenance: "Medium", parts: "Moderate", ownerType: "Chauffeur-Oriented", reliability: "Good", offRoad: "Good", specs: ["Engine: 3.5L V6 Petrol", "BHP: 280 bhp", "Fuel: Petrol"] },
+            
+            "Mercedes GLS": { price: "$85,000", maintenance: "High", parts: "Expensive", ownerType: "Chauffeur-Oriented", reliability: "Average", offRoad: "Average", specs: ["Engine: 3.0L V6", "BHP: 362 bhp", "Fuel: Petrol"] },
+            "Mercedes S-Class": { price: "$110,000", maintenance: "Very High", parts: "Very Expensive", ownerType: "Chauffeur-Oriented", reliability: "Average", offRoad: "Poor", specs: ["Engine: 3.0L V6", "BHP: 429 bhp", "Fuel: Petrol"] },
+            "Mercedes AMG GT": { price: "$145,000", maintenance: "Very High", parts: "Very Expensive", ownerType: "Driver-Oriented", reliability: "Average", offRoad: "Poor", specs: ["Engine: 4.0L V8", "BHP: 577 bhp", "Fuel: Petrol"] },
+            
+            "Audi RS5": { price: "$75,000", maintenance: "High", parts: "Expensive", ownerType: "Driver-Oriented", reliability: "Average", offRoad: "Poor", specs: ["Engine: 2.9L V6", "BHP: 444 bhp", "Fuel: Petrol"] },
+            "Audi Q7": { price: "$60,000", maintenance: "High", parts: "Expensive", ownerType: "Chauffeur-Oriented", reliability: "Average", offRoad: "Average", specs: ["Engine: 3.0L V6", "BHP: 335 bhp", "Fuel: Petrol"] },
+            "Audi R8": { price: "$150,000", maintenance: "Very High", parts: "Very Expensive", ownerType: "Driver-Oriented", reliability: "Average", offRoad: "Poor", specs: ["Engine: 5.2L V10", "BHP: 602 bhp", "Fuel: Petrol"] }
+        };
+
+        function populateModels(brandId, modelId) {
+            const brand = document.getElementById(brandId).value;
+            const modelSelect = document.getElementById(modelId);
+            
+            modelSelect.innerHTML = '<option value="">-- Select Model --</option>';
+            
+            if (brand && allCarsList[brand]) {
+                allCarsList[brand].forEach(carName => {
+                    const option = document.createElement('option');
+                    option.value = carName;
+                    option.textContent = carName;
+                    modelSelect.appendChild(option);
+                });
+            }
+        }
+
+        function startComparison() {
+            const brand1 = document.getElementById('brand1').value;
+            const model1 = document.getElementById('model1').value;
+            const brand2 = document.getElementById('brand2').value;
+            const model2 = document.getElementById('model2').value;
+
+            if (!brand1 || !model1 || !brand2 || !model2) {
+                alert("Please select both brands and models!");
+                return;
+            }
+
+            // Find the data
+            const car1 = comparisonData[model1];
+            const car2 = comparisonData[model2];
+
+            // Build the table
+            const tableHTML = `
+                <tr>
+                    <th>Specification</th>
+                    <th>${model1}</th>
+                    <th>${model2}</th>
+                </tr>
+                <tr>
+                    <td>Price</td>
+                    <td class="${car1.price < car2.price ? 'winner' : ''}">${car1.price}</td>
+                    <td class="${car2.price < car1.price ? 'winner' : ''}">${car2.price}</td>
+                </tr>
+                <tr>
+                    <td>Maintenance Cost</td>
+                    <td class="${car1.maintenance === 'Low' || car1.maintenance === 'Very Low' ? 'winner' : ''}">${car1.maintenance}</td>
+                    <td class="${car2.maintenance === 'Low' || car2.maintenance === 'Very Low' ? 'winner' : ''}">${car2.maintenance}</td>
+                </tr>
+                <tr>
+                    <td>Parts Price</td>
+                    <td class="${car1.parts === 'Cheap' ? 'winner' : ''}">${car1.parts}</td>
+                    <td class="${car2.parts === 'Cheap' ? 'winner' : ''}">${car2.parts}</td>
+                </tr>
+                <tr>
+                    <td>Owner Type</td>
+                    <td>${car1.ownerType}</td>
+                    <td>${car2.ownerType}</td>
+                </tr>
+                <tr>
+                    <td>Reliability</td>
+                    <td class="${car1.reliability === 'Excellent' ? 'winner' : ''}">${car1.reliability}</td>
+                    <td class="${car2.reliability === 'Excellent' ? 'winner' : ''}">${car2.reliability}</td>
+                </tr>
+                <tr>
+                    <td>Off-Roading</td>
+                    <td class="${car1.offRoad === 'Great' ? 'winner' : ''}">${car1.offRoad}</td>
+                    <td class="${car2.offRoad === 'Great' ? 'winner' : ''}">${car2.offRoad}</td>
+                </tr>
+                <tr>
+                    <td>Engine</td>
+                    <td>${car1.specs[0]}</td>
+                    <td>${car2.specs[0]}</td>
+                </tr>
+                <tr>
+                    <td>BHP</td>
+                    <td>${car1.specs[1]}</td>
+                    <td>${car2.specs[1]}</td>
+                </tr>
+                <tr>
+                    <td>Fuel</td>
+                    <td>${car1.specs[2]}</td>
+                    <td>${car2.specs[2]}</td>
+                </tr>
+            `;
+
+            document.getElementById('comparisonTable').innerHTML = tableHTML;
+
+            // Build the Smart Conclusion with Pros and Cons
+            let pros1 = [];
+            let cons1 = [];
+            let pros2 = [];
+            let cons2 = [];
+
+            // 1. Price
+            if (car1.price < car2.price) {
+                pros1.push(`Cheaper by ${car2.price} (Lower upfront cost)`);
+                cons2.push(`More expensive by ${car1.price} (Higher upfront cost)`);
+            } else if (car2.price < car1.price) {
+                pros2.push(`Cheaper by ${car1.price} (Lower upfront cost)`);
+                cons1.push(`More expensive by ${car2.price} (Higher upfront cost)`);
+            } else {
+                pros1.push("Same price range");
+                pros2.push("Same price range");
+            }
+
+            // 2. Maintenance
+            if (car1.maintenance === "Very Low" || car1.maintenance === "Low") {
+                pros1.push("Low maintenance cost (Budget-friendly)");
+                if (car2.maintenance === "High" || car2.maintenance === "Very High") {
+                    cons2.push("High maintenance cost (Expensive in long run)");
+                } else if (car2.maintenance === "Medium") {
+                    cons2.push("Medium maintenance cost");
+                }
+            } else if (car2.maintenance === "Very Low" || car2.maintenance === "Low") {
+                pros2.push("Low maintenance cost (Budget-friendly)");
+                if (car1.maintenance === "High" || car1.maintenance === "Very High") {
+                    cons1.push("High maintenance cost (Expensive in long run)");
+                } else if (car1.maintenance === "Medium") {
+                    cons1.push("Medium maintenance cost");
+                }
+            } else if (car1.maintenance === "Medium") {
+                pros1.push("Medium maintenance cost");
+                if (car2.maintenance === "High" || car2.maintenance === "Very High") {
+                    cons2.push("High maintenance cost");
+                }
+            } else if (car2.maintenance === "Medium") {
+                pros2.push("Medium maintenance cost");
+                if (car1.maintenance === "High" || car1.maintenance === "Very High") {
+                    cons1.push("High maintenance cost");
+                }
+            } else {
+                pros1.push("High maintenance cost");
+                pros2.push("High maintenance cost");
+            }
+
+            // 3. Reliability
+            if (car1.reliability === "Excellent") {
+                pros1.push("Excellent reliability");
+                if (car2.reliability !== "Excellent") cons2.push("Average reliability");
+            } else if (car2.reliability === "Excellent") {
+                pros2.push("Excellent reliability");
+                if (car1.reliability !== "Excellent") cons1.push("Average reliability");
+            }
+
+            // 4. Off-Roading
+            if (car1.offRoad === "Great") {
+                pros1.push("Excellent off-roading capability");
+                if (car2.offRoad !== "Great") cons2.push("Limited off-roading capability");
+            } else if (car2.offRoad === "Great") {
+                pros2.push("Excellent off-roading capability");
+                if (car1.offRoad !== "Great") cons1.push("Limited off-roading capability");
+            }
+
+            // 5. Owner Type
+            if (car1.ownerType === "Driver-Oriented") {
+                pros1.push("Sporty and driver-centric");
+                if (car2.ownerType === "Chauffeur-Oriented") cons2.push("Not meant for self-driving enthusiasts");
+            } else if (car1.ownerType === "Chauffeur-Oriented") {
+                pros1.push("Comfort-focused for rear passengers");
+                if (car2.ownerType === "Driver-Oriented") cons2.push("Not as comfortable for rear passengers");
+            }
+
+            if (car2.ownerType === "Driver-Oriented") {
+                pros2.push("Sporty and driver-centric");
+                if (car1.ownerType === "Chauffeur-Oriented") cons1.push("Not meant for self-driving enthusiasts");
+            } else if (car2.ownerType === "Chauffeur-Oriented") {
+                pros2.push("Comfort-focused for rear passengers");
+                if (car1.ownerType === "Driver-Oriented") cons1.push("Not as comfortable for rear passengers");
+            }
+
+            // 6. Power (BHP)
+            const bhp1 = parseInt(car1.specs[1].replace(/\D/g, ''));
+            const bhp2 = parseInt(car2.specs[1].replace(/\D/g, ''));
+            if (bhp1 > bhp2) {
+                pros1.push("More powerful engine");
+                cons2.push("Less powerful engine");
+            } else if (bhp2 > bhp1) {
+                pros2.push("More powerful engine");
+                cons1.push("Less powerful engine");
+            }
+
+            // Convert arrays to HTML lists
+            const pros1HTML = pros1.length > 0 ? `<ul>${pros1.map(p => `<li>${p}</li>`).join('')}</ul>` : `<p>No significant advantages found.</p>`;
+            const cons1HTML = cons1.length > 0 ? `<ul>${cons1.map(c => `<li>${c}</li>`).join('')}</ul>` : `<p>No major drawbacks found.</p>`;
+            const pros2HTML = pros2.length > 0 ? `<ul>${pros2.map(p => `<li>${p}</li>`).join('')}</ul>` : `<p>No significant advantages found.</p>`;
+            const cons2HTML = cons2.length > 0 ? `<ul>${cons2.map(c => `<li>${c}</li>`).join('')}</ul>` : `<p>No major drawbacks found.</p>`;
+
+            // Build the Conclusion Box HTML
+            const conclusionHTML = `
+                <h2>Conclusion</h2>
+                <p style="font-size:1.1rem; line-height:1.7;">Both cars have their own strengths. Here is a breakdown of what you gain and lose with each:</p>
+                
+                <div class="pros-cons-container">
+                    <div class="pros-cons-col pros-car1">
+                        <h3>✅ Pros of ${model1}</h3>
+                        ${pros1HTML}
+                    </div>
+                    <div class="pros-cons-col cons-car1">
+                        <h3>⚠️ Cons of ${model1}</h3>
+                        ${cons1HTML}
+                    </div>
+                </div>
+
+                <div class="pros-cons-container">
+                    <div class="pros-cons-col pros-car2">
+                        <h3>✅ Pros of ${model2}</h3>
+                        ${pros2HTML}
+                    </div>
+                    <div class="pros-cons-col cons-car2">
+                        <h3>⚠️ Cons of ${model2}</h3>
+                        ${cons2HTML}
+                    </div>
+                </div>
+
+                <div class="conclusion-final">
+                    <h3>🏁 Which one should you buy?</h3>
+                    <p style="font-size:1.1rem; line-height:1.7;">
+                        ${model1} is ideal if you value <strong>${pros1[0] ? pros1[0].toLowerCase() : 'its key strengths'}</strong>.<br>
+                        ${model2} is ideal if you value <strong>${pros2[0] ? pros2[0].toLowerCase() : 'its key strengths'}</strong>.<br><br>
+                        Consider how you plan to use the car daily, your budget for maintenance, and whether you prefer driving yourself or being chauffeured.
+                    </p>
+                </div>
+            `;
+
+            document.getElementById('conclusionBox').innerHTML = conclusionHTML;
+
+            // Show the result section
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

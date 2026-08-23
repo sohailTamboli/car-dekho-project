@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            margin: 0; 
+            background: #f4f4f4; 
+            padding: 20px;
+        }
+
+        /* --- EXIT BUTTON (Top Right) --- */
+        .exit-container {
+            display: flex;
+            justify-content: flex-end; /* Pushes button to the right */
+            margin-bottom: 20px;
+        }
+        .exit-btn {
+            background: green;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .exit-btn:hover {
+            background: #c82333;
+        }
+
+        /* --- CARD GRID CSS --- */
+        .page-title { text-align: center; font-size: 2rem; margin-bottom: 30px; }
+        .car-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 30px; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            align-items: start;
+        }
+        .car-card { 
+            background: white; 
+            border-radius: 10px; 
+            padding: 20px; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            scroll-margin-top: 20px; /* Prevents navbar overlap */
+        }
+        .car-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
+        .price { font-weight: bold; margin: 10px 0; }
+        
+        .more-info-btn { 
+            background: none; 
+            border: none; 
+            color: #007bff; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 5px; 
+        }
+        .specs { 
+            text-align: left; 
+            font-size: 0.9rem; 
+            margin-top: 15px; 
+            border-top: 1px solid #ddd; 
+            padding-top: 12px; 
+            background: #f9f9f9; 
+            border-radius: 5px; 
+            padding: 10px; 
+            display: none; 
+        }
+        .specs span { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 5px; 
+            border-bottom: 1px dashed #eee; 
+        }
+        .specs span:last-child { border-bottom: none; }
+        
+        @media (max-width: 768px) { .car-grid { grid-template-columns: 1fr; } }
+
+        /* --- AESTHETIC UPGRADE: FONTS --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        h1, h2, h3, .brand-title, .featured-cars h2, .contact-title, .compare-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        /* --- DARK MODE STYLES (Added by me) --- */
+        body.dark-mode {
+            background: #121212;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .exit-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        body.dark-mode .exit-btn:hover {
+            background: #218838;
+        }
+
+        body.dark-mode .page-title {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .car-card {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            border-color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        body.dark-mode .car-card h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .price {
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .more-info-btn {
+            color: #4da3ff;
+        }
+
+        body.dark-mode .specs {
+            background: #2a2a2a;
+            border-top-color: #333;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .specs span {
+            border-bottom-color: #333;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .specs span strong {
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- EXIT BUTTON: Takes you back to cars.html -->
+    <div class="exit-container">
+        <a href="cars.html" class="exit-btn"><i class="fas fa-times"></i> Exit</a>
+    </div>
+
+    <h1 class="page-title" id="brandTitle">Select a Brand</h1>
+
+    <div class="car-grid" id="carContainer"></div>
+
+    <!-- DARK MODE JAVASCRIPT (Added by me) -->
+    <script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+    <script>
+        // 1. Get the brand name from the URL (e.g., "tata", "bmw")
+        const urlParams = new URLSearchParams(window.location.search);
+        const brand = urlParams.get('brand');
+
+        // 2. DATABASE: We store all the car info here in ONE place
+        // Note: Every car now has a unique "id" 
+        const allCars = {
+            tata: { 
+                title: "Tata Models",
+                cars: [
+                    { id: "tata-nexon", name: "Tata Nexon", price: "$12,000", img: "nexon.jpg", specs: ["Engine: 1.2L Turbo Petrol / 1.5L Turbo Diesel", "BHP: 118.3 bhp (Petrol) / 108.5 bhp (Diesel)", "Torque: 170 Nm / 260 Nm", "Mileage: 17.4 km/l (Petrol)", "Fuel: Petrol & Diesel"] },
+                    { id: "tata-harrier", name: "Tata Harrier", price: "$18,000", img: "harrier.jpg", specs: ["Engine: 2.0L Kryotec Diesel", "BHP: 168 bhp @ 3750 rpm", "Torque: 350 Nm", "Mileage: 16.8 km/l", "Fuel: Diesel"] },
+                    { id: "tata-safari", name: "Tata Safari", price: "$22,000", img: "safari.jpg", specs: ["Engine: 2.0L Kryotec Diesel", "BHP: 168 bhp @ 3750 rpm", "Torque: 350 Nm", "Mileage: 15.5 km/l", "Fuel: Diesel", "Seating: 6 / 7 Seater"] }
+                ]
+            },
+            bmw: { 
+                title: "BMW Models",
+                cars: [
+                    { 
+                        id: "bmw-m5cs",
+                        name: "BMW M5 CS", 
+                        price: "$142,000", 
+                        img: "M5 cs 2.jpg", 
+                        specs: [
+                            "Engine: 4.4L Twin-Turbo V8", 
+                            "BHP: 627 bhp @ 6000 rpm", 
+                            "Torque: 750 Nm @ 1800-5950 rpm", 
+                            "Mileage: 10.5 km/l", 
+                            "Transmission: 8-Speed Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 305 km/h", 
+                            "Seating: 4 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "bmw-x7",
+                        name: "BMW X7", 
+                        price: "$78,000", 
+                        img: "x7.jpg", 
+                        specs: [
+                            "Engine: 3.0L Turbo Inline-6", 
+                            "BHP: 375 bhp @ 5500 rpm", 
+                            "Torque: 520 Nm @ 1850-5000 rpm", 
+                            "Mileage: 10.0 km/l", 
+                            "Transmission: 8-Speed Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 250 km/h", 
+                            "Seating: 7 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "bmw-m8",
+                        name: "BMW M8", 
+                        price: "$130,000", 
+                        img: "m8.jpg", 
+                        specs: [
+                            "Engine: 4.4L Twin-Turbo V8", 
+                            "BHP: 617 bhp @ 6000 rpm", 
+                            "Torque: 750 Nm @ 1800-5600 rpm", 
+                            "Mileage: 9.5 km/l", 
+                            "Transmission: 8-Speed Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 310 km/h", 
+                            "Seating: 4 Seater"
+                        ] 
+                    }
+                ]
+            }, 
+            suzuki: { 
+                title: "Suzuki Models",
+                cars: [
+                    { 
+                        id: "suzuki-ciaz",
+                        name: "Suzuki Ciaz", 
+                        price: "$12,500", 
+                        img: "Ciaz.jpg", 
+                        specs: [
+                            "Engine: 1.5L K15 Petrol", 
+                            "BHP: 103 bhp @ 6000 rpm", 
+                            "Torque: 138 Nm @ 4400 rpm", 
+                            "Mileage: 20.5 km/l", 
+                            "Transmission: 5-Speed Manual / 4-Speed Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 185 km/h", 
+                            "Seating: 5 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "suzuki-grandvitara",
+                        name: "Suzuki Grand Vitara", 
+                        price: "$20,000", 
+                        img: "GrandVitara.jpg", 
+                        specs: [
+                            "Engine: 1.5L K15 Petrol / 1.5L Hybrid", 
+                            "BHP: 102 bhp @ 6000 rpm (Petrol)", 
+                            "Torque: 137 Nm @ 4400 rpm (Petrol)", 
+                            "Mileage: 21.5 km/l (Petrol) / 27.5 km/l (Hybrid)", 
+                            "Transmission: 5-Speed Manual / 6-Speed Auto", 
+                            "Fuel: Petrol & Hybrid", 
+                            "Top Speed: 190 km/h", 
+                            "Seating: 5 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "suzuki-baleno",
+                        name: "Suzuki Baleno", 
+                        price: "$10,000", 
+                        img: "Baleno.jpg", 
+                        specs: [
+                            "Engine: 1.2L K12 Petrol", 
+                            "BHP: 88 bhp @ 6000 rpm", 
+                            "Torque: 113 Nm @ 4400 rpm", 
+                            "Mileage: 22.5 km/l", 
+                            "Transmission: 5-Speed Manual / AMT", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 180 km/h", 
+                            "Seating: 5 Seater"
+                        ] 
+                    }
+                ]
+            },
+            mahindra: { 
+                title: "Mahindra Models",
+                cars: [
+                    { 
+                        id: "mahindra-scorpio",
+                        name: "Mahindra Scorpio N", 
+                        price: "$22,000", 
+                        img: "scorpion.jpg", 
+                        specs: [
+                            "Engine: 2.2L mHawk Diesel", 
+                            "BHP: 172 bhp @ 3500 rpm", 
+                            "Torque: 400 Nm @ 1750-2500 rpm", 
+                            "Mileage: 16.0 km/l", 
+                            "Transmission: 6-Speed Manual / 6-Speed Auto", 
+                            "Fuel: Diesel", 
+                            "Top Speed: 180 km/h", 
+                            "Seating: 7 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "mahindra-xuv700",
+                        name: "Mahindra XUV700", 
+                        price: "$26,000", 
+                        img: "xuv700.jpg", 
+                        specs: [
+                            "Engine: 2.0L Turbo Petrol / 2.2L Turbo Diesel", 
+                            "BHP: 197 bhp @ 5000 rpm (Petrol) / 182 bhp @ 3500 rpm (Diesel)", 
+                            "Torque: 380 Nm @ 1750 rpm (Petrol) / 450 Nm @ 1750 rpm (Diesel)", 
+                            "Mileage: 15.5 km/l", 
+                            "Transmission: 6-Speed Manual / 6-Speed Auto", 
+                            "Fuel: Petrol & Diesel", 
+                            "Top Speed: 200 km/h", 
+                            "Seating: 5 / 7 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "mahindra-alturas",
+                        name: "Mahindra Alturas G4", 
+                        price: "$33,000", 
+                        img: "alturas.jpg", 
+                        specs: [
+                            "Engine: 2.2L Turbo Diesel", 
+                            "BHP: 178 bhp @ 3800 rpm", 
+                            "Torque: 420 Nm @ 1600-2600 rpm", 
+                            "Mileage: 12.5 km/l", 
+                            "Transmission: 7-Speed Auto", 
+                            "Fuel: Diesel", 
+                            "Top Speed: 190 km/h", 
+                            "Seating: 7 Seater"
+                        ] 
+                    }
+                ]
+            },
+            toyota: { 
+                title: "Toyota Models",
+                cars: [
+                    { 
+                        id: "toyota-fortuner",
+                        name: "Toyota Fortuner Legender", 
+                        price: "$45,000", 
+                        img: "fortuner-legender.avif", 
+                        specs: [
+                            "Engine: 2.7L Petrol / 2.8L Turbo Diesel", 
+                            "BHP: 164 bhp @ 5200 rpm (Petrol) / 201 bhp @ 3400 rpm (Diesel)", 
+                            "Torque: 245 Nm @ 4000 rpm (Petrol) / 500 Nm @ 1600-2800 rpm (Diesel)", 
+                            "Mileage: 15.2 km/l (Diesel)", 
+                            "Transmission: 6-Speed Manual / 6-Speed Auto", 
+                            "Fuel: Petrol & Diesel", 
+                            "Top Speed: 190 km/h", 
+                            "Seating: 7 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "toyota-hilux",
+                        name: "Toyota Hilux", 
+                        price: "$38,000", 
+                        img: "hilux.jpg", 
+                        specs: [
+                            "Engine: 2.8L Turbo Diesel", 
+                            "BHP: 201 bhp @ 3400 rpm", 
+                            "Torque: 500 Nm @ 1600-2800 rpm", 
+                            "Mileage: 14.0 km/l", 
+                            "Transmission: 6-Speed Manual / 6-Speed Auto", 
+                            "Fuel: Diesel", 
+                            "Top Speed: 175 km/h", 
+                            "Seating: 5 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "toyota-lc",
+                        name: "Toyota Land Cruiser 300", 
+                        price: "$85,000", 
+                        img: "lc-300.jpg", 
+                        specs: [
+                            "Engine: 3.5L Twin-Turbo V6 Petrol", 
+                            "BHP: 409 bhp @ 5200 rpm", 
+                            "Torque: 650 Nm @ 2000-3600 rpm", 
+                            "Mileage: 10.0 km/l", 
+                            "Transmission: 10-Speed Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 210 km/h", 
+                            "Seating: 7 Seater"
+                        ] 
+                    }
+                ]
+            },
+            hyundai: { 
+                title: "Hyundai Models",
+                cars: [
+                    { 
+                        id: "hyundai-verna",
+                        name: "Hyundai Verna", 
+                        price: "$18,000", 
+                        img: "Verna.jpg", 
+                        specs: [
+                            "Engine: 1.5L Petrol / 1.5L Turbo Diesel", 
+                            "BHP: 113 bhp @ 6300 rpm (Petrol) / 113 bhp @ 4000 rpm (Diesel)", 
+                            "Torque: 144 Nm @ 4500 rpm (Petrol) / 250 Nm @ 1500-2750 rpm (Diesel)", 
+                            "Mileage: 20.5 km/l (Petrol) / 25.0 km/l (Diesel)", 
+                            "Transmission: 6-Speed Manual / CVT Auto", 
+                            "Fuel: Petrol & Diesel", 
+                            "Top Speed: 190 km/h", 
+                            "Seating: 5 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "hyundai-santafe",
+                        name: "Hyundai Santa Fe", 
+                        price: "$40,000", 
+                        img: "santafee.jpg", 
+                        specs: [
+                            "Engine: 2.5L Turbo Petrol", 
+                            "BHP: 277 bhp @ 5800 rpm", 
+                            "Torque: 422 Nm @ 1650-4000 rpm", 
+                            "Mileage: 12.0 km/l", 
+                            "Transmission: 8-Speed DCT Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 210 km/h", 
+                            "Seating: 7 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "hyundai-elantra",
+                        name: "Hyundai Elantra", 
+                        price: "$24,000", 
+                        img: "elantra.jpg", 
+                        specs: [
+                            "Engine: 2.0L Petrol", 
+                            "BHP: 147 bhp @ 6200 rpm", 
+                            "Torque: 179 Nm @ 4500 rpm", 
+                            "Mileage: 18.5 km/l", 
+                            "Transmission: 6-Speed Manual / CVT Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 200 km/h", 
+                            "Seating: 5 Seater"
+                        ] 
+                    }
+                ]
+            },
+            honda: { 
+                title: "Honda Models",
+                cars: [
+                    { 
+                        id: "honda-elevate",
+                        name: "Honda Elevate", 
+                        price: "$18,500", 
+                        img: "elevate.jpg", 
+                        specs: [
+                            "Engine: 1.5L i-VTEC Petrol", 
+                            "BHP: 119 bhp @ 6600 rpm", 
+                            "Torque: 145 Nm @ 4300 rpm", 
+                            "Mileage: 16.5 km/l", 
+                            "Transmission: 6-Speed Manual / CVT Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 185 km/h", 
+                            "Seating: 5 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "honda-accord",
+                        name: "Honda Accord", 
+                        price: "$35,000", 
+                        img: "accord.jpg", 
+                        specs: [
+                            "Engine: 2.0L Turbo Petrol / 2.0L Hybrid", 
+                            "BHP: 252 bhp @ 6500 rpm (Petrol)", 
+                            "Torque: 370 Nm @ 1500-4000 rpm (Petrol)", 
+                            "Mileage: 22.5 km/l (Hybrid)", 
+                            "Transmission: 10-Speed Auto / e-CVT Hybrid", 
+                            "Fuel: Petrol & Hybrid", 
+                            "Top Speed: 225 km/h", 
+                            "Seating: 5 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "honda-pilot",
+                        name: "Honda Pilot", 
+                        price: "$42,000", 
+                        img: "pilot.jpg", 
+                        specs: [
+                            "Engine: 3.5L V6 Petrol", 
+                            "BHP: 280 bhp @ 6000 rpm", 
+                            "Torque: 355 Nm @ 4700 rpm", 
+                            "Mileage: 11.0 km/l", 
+                            "Transmission: 10-Speed Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 210 km/h", 
+                            "Seating: 7 / 8 Seater"
+                        ] 
+                    }
+                ]
+            },
+            mercedes: { 
+                title: "Mercedes Models",
+                cars: [
+                    { 
+                        id: "mercedes-gls",
+                        name: "Mercedes GLS", 
+                        price: "$85,000", 
+                        img: "gls.jpg", 
+                        specs: [
+                            "Engine: 3.0L Turbo Inline-6 / 4.0L Twin-Turbo V8", 
+                            "BHP: 362 bhp @ 5500 rpm (6-Cyl) / 550 bhp @ 6000 rpm (V8)", 
+                            "Torque: 500 Nm @ 1600-4500 rpm (6-Cyl) / 730 Nm @ 2000-4000 rpm (V8)", 
+                            "Mileage: 10.5 km/l", 
+                            "Transmission: 9-Speed Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 250 km/h", 
+                            "Seating: 7 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "mercedes-sclass",
+                        name: "Mercedes S-Class", 
+                        price: "$110,000", 
+                        img: "sclass.jpg", 
+                        specs: [
+                            "Engine: 3.0L Turbo Inline-6 / 4.0L Twin-Turbo V8", 
+                            "BHP: 429 bhp @ 6100 rpm (6-Cyl) / 496 bhp @ 5500 rpm (V8)", 
+                            "Torque: 520 Nm @ 1800-5000 rpm (6-Cyl) / 700 Nm @ 2000-4000 rpm (V8)", 
+                            "Mileage: 12.0 km/l", 
+                            "Transmission: 9-Speed Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 250 km/h", 
+                            "Seating: 5 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "mercedes-amggt",
+                        name: "Mercedes AMG GT", 
+                        price: "$145,000", 
+                        img: "amggt.jpg", 
+                        specs: [
+                            "Engine: 4.0L Twin-Turbo V8", 
+                            "BHP: 577 bhp @ 6500 rpm", 
+                            "Torque: 700 Nm @ 1900-5500 rpm", 
+                            "Mileage: 8.5 km/l", 
+                            "Transmission: 7-Speed DCT Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 318 km/h", 
+                            "Seating: 2 Seater"
+                        ] 
+                    }
+                ]
+            },
+            audi: { 
+                title: "Audi Models",
+                cars: [
+                    { 
+                        id: "audi-rs5",
+                        name: "Audi RS5", 
+                        price: "$75,000", 
+                        img: "rs5.jpg", 
+                        specs: [
+                            "Engine: 2.9L Twin-Turbo V6", 
+                            "BHP: 444 bhp @ 5700 rpm", 
+                            "Torque: 600 Nm @ 1900-5000 rpm", 
+                            "Mileage: 10.5 km/l", 
+                            "Transmission: 8-Speed Tiptronic Auto", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 280 km/h", 
+                            "Seating: 4 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "audi-q7",
+                        name: "Audi Q7", 
+                        price: "$60,000", 
+                        img: "q7.jpg", 
+                        specs: [
+                            "Engine: 3.0L Turbo V6 Petrol / 3.0L V6 Diesel", 
+                            "BHP: 335 bhp @ 5200 rpm (Petrol) / 282 bhp @ 3500 rpm (Diesel)", 
+                            "Torque: 500 Nm @ 1370-4500 rpm (Petrol) / 600 Nm @ 1500-3000 rpm (Diesel)", 
+                            "Mileage: 12.5 km/l (Diesel)", 
+                            "Transmission: 8-Speed Tiptronic Auto", 
+                            "Fuel: Petrol & Diesel", 
+                            "Top Speed: 250 km/h", 
+                            "Seating: 7 Seater"
+                        ] 
+                    },
+                    { 
+                        id: "audi-r8",
+                        name: "Audi R8", 
+                        price: "$150,000", 
+                        img: "r8.jpg", 
+                        specs: [
+                            "Engine: 5.2L FSI V10", 
+                            "BHP: 602 bhp @ 8100 rpm", 
+                            "Torque: 560 Nm @ 6500 rpm", 
+                            "Mileage: 7.5 km/l", 
+                            "Transmission: 7-Speed S-Tronic DCT", 
+                            "Fuel: Petrol", 
+                            "Top Speed: 330 km/h", 
+                            "Seating: 2 Seater"
+                        ] 
+                    }
+                ]
+            }
+        };
+
+        // 3. Load the data onto the screen
+        if (brand && allCars[brand]) {
+            const data = allCars[brand];
+            document.getElementById('brandTitle').innerText = data.title;
+            
+            let html = '';
+            data.cars.forEach(car => {
+                html += `
+                    <div class="car-card" id="${car.id}">
+                        <img src="${car.img}" alt="${car.name}">
+                        <h3>${car.name}</h3>
+                        <p class="price">${car.price}</p>
+                        <button class="more-info-btn" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'block' ? 'none' : 'block'); this.innerText = (this.nextElementSibling.style.display === 'block' ? 'Less Info ▲' : 'More Info ▼')">More Info ▼</button>
+                        <div class="specs">
+                            ${car.specs.map(spec => `<span>${spec}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('carContainer').innerHTML = html;
+
+            // 4. Check if a specific car ID is in the URL (e.g., #bmw-m5cs)
+            if(window.location.hash) {
+                let targetId = window.location.hash.substring(1); // remove the '#' 
+                let targetCard = document.getElementById(targetId);
+                if(targetCard) {
+                    // Scroll to the card
+                    targetCard.scrollIntoView({ behavior: 'smooth' });
+                    // Automatically click the 'More Info' button
+                    let btn = targetCard.querySelector('.more-info-btn');
+                    if(btn) btn.click();
+                }
+            }
+
+        } else {
+            // Fallback if someone opens the page without clicking a logo
+            document.getElementById('brandTitle').innerText = "Please select a brand from the Cars page.";
+            document.getElementById('carContainer').innerHTML = `<a href="cars.html" style="text-align:center; display:block; margin-top:20px; color:#007bff;">Go back to Cars</a>`;
+        }
+    </script>
+
+</body>
+</html>

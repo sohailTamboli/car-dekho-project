@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Car Dekho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* PREMIUM FLOATING ICONS */
+        @keyframes floatIcon {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+            50% { transform: translateY(-20px) rotate(5deg); opacity: 0.8; }
+            100% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+        }
+
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef, #f8f9fa); 
+        }
+
+        /* Floating Icon Container */
+        .icon-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* Floating Icons */
+        .floating-contact-icon {
+            position: absolute;
+            font-size: 3.5rem;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+            animation: floatIcon 6s infinite ease-in-out;
+        }
+
+        /* Phone */
+        .floating-contact-icon.fa-phone {
+            top: 8%;
+            left: 5%;
+            color: #007bff;
+            animation-delay: 0s;
+        }
+
+        /* Email */
+        .floating-contact-icon.fa-envelope {
+            top: 10%;
+            left: 80%;
+            color: #28a745;
+            animation-delay: 1.5s;
+        }
+
+        /* Location */
+        .floating-contact-icon.fa-location-dot {
+            top: 70%;
+            left: 15%;
+            color: #dc3545;
+            animation-delay: 3s;
+        }
+
+        /* WhatsApp */
+        .floating-contact-icon.fab.fa-whatsapp {
+            top: 75%;
+            left: 75%;
+            color: #25D366;
+            animation-delay: 4.5s;
+        }
+
+        /* EXACT NAVBAR CSS FROM INDEX PAGE */
+        .navbar {
+            display: flex;          
+            align-items: center;   
+            gap: 20px;              
+            padding: 15px;
+            background-color: #f8f9fa; 
+        }
+
+        .navbar a {
+            text-decoration: none;  
+            color: black;
+            font-weight: 500;      
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            white-space: nowrap; 
+        }
+
+        .anchor {
+            display: flex;
+            gap: 20px;
+            margin-left: auto; 
+        }
+
+        .navbar .fa-bars {
+            display: none; 
+        }
+
+        @media (max-width: 768px) {
+            .navbar .fa-bars {
+                display: block; 
+                cursor: pointer; 
+                font-size: 24px;
+            }
+            .anchor {
+                display: none; 
+                flex-direction: column; 
+                position: absolute;
+                top: 50px; 
+                background: white;
+                width: 100%;
+                padding: 20px;
+                left: 0;
+            }
+            .anchor.active {
+                display: flex; 
+            }
+        }
+
+        /* CONTACT PAGE SPECIFIC CSS */
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 20px;
+            height: calc(100vh - 50px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+        .contact-title { font-size: 2.5rem; color: #333; margin-bottom: 10px; }
+        .contact-subtitle { color: #444; font-size: 1.2rem; margin-bottom: 30px; }
+        
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        /* Boxes */
+        .info-box {
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            flex: 1 1 180px;
+            max-width: 180px;
+        }
+        .info-box i { font-size: 2rem; color: #007bff; margin-bottom: 10px; }
+        .info-box h4 { margin: 0; color: #333; font-size: 1.15rem; }
+        .info-box p { margin: 5px 0 0; color: #777; font-size: 0.9rem; }
+        
+        /* Make the entire box clickable */
+        .info-box a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .info-box a:hover { 
+            opacity: 1; 
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+        }
+
+        /* WhatsApp Box special styling */
+        .whatsapp-box {
+            background: rgba(232, 245, 233, 0.95);
+            border: 1px solid #a5d6a7;
+        }
+        .whatsapp-box i { color: #25D366; }
+
+        .footer-note {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        /* Mobile view */
+        @media (max-width: 600px) {
+            .contact-container {
+                height: 100vh;
+                padding-top: 50px;
+            }
+            .contact-title { font-size: 2rem; }
+            .info-box { 
+                max-width: 100%; 
+                flex-basis: 100%; 
+                padding: 10px;
+            }
+            .floating-contact-icon { font-size: 2.5rem; }
+        }
+
+        /* --- AESTHETIC UPGRADE: FONTS --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        h1, h2, h3, .brand-title, .featured-cars h2, .contact-title, .compare-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        /* --- DARK MODE STYLES (Added by me) --- */
+        body.dark-mode {
+            background: #121212;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .navbar {
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #333;
+        }
+
+        body.dark-mode .navbar a {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .contact-title {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .contact-subtitle {
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .info-box {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            border-color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        body.dark-mode .info-box h4 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .info-box p {
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .whatsapp-box {
+            background: rgba(37, 211, 102, 0.15);
+            border-color: #25D366;
+        }
+
+        /* Floating Icons */
+        body.dark-mode .floating-contact-icon {
+            opacity: 0.4;
+        }
+
+        body.dark-mode .footer-note {
+            color: #a0a0a0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Contact Icons in Background -->
+    <div class="icon-background">
+        <i class="fas fa-phone floating-contact-icon"></i>
+        <i class="fas fa-envelope floating-contact-icon"></i>
+        <i class="fas fa-location-dot floating-contact-icon"></i>
+        <i class="fab fa-whatsapp floating-contact-icon"></i>
+    </div>
+
+    <!-- EXACT NAVBAR (Same as your index.html) -->
+    <nav class="navbar">
+        <i class="fas fa-car"></i> Car Dekho
+        <i class="fas fa-bars"></i>
+        <div class="anchor">
+            <a href="index.html">Home</a>
+            <a href="cars.html">Cars</a>
+            <a href="compare.html">Compare</a>
+            <a href="about.html">About</a>
+            <a href="contact.html" style="color: #007bff; font-weight: bold;">Contact</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+
+    <!-- CONTACT PAGE CONTENT -->
+    <div class="contact-container">
+        <h1 class="contact-title">Contact Us</h1>
+        <p class="contact-subtitle">We'd love to hear from you! Feel free to reach out.</p>
+
+        <div class="contact-info">
+            <!-- PHONE: Opens dialer OR SMS -->
+            <div class="info-box">
+                <a href="tel:+919021682001" onclick="alert('Opening Dialer to call 9021682001...')">
+                    <i class="fas fa-phone"></i>
+                    <h4>Call Us</h4>
+                    <p>9021682001</p>
+                </a>
+            </div>
+
+            <!-- EMAIL: Uses Gmail directly to open Compose window -->
+            <div class="info-box">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sohailtamboli6255@gmail.com&su=Contact%20from%20Car%20Dekho%20Website&body=Hi%20Sohail%2C%0A%0AI%20want%20to%20contact%20you.%0A%0AMy%20Name%3A%20%0AMy%20Contact%20Number%3A%20%0A%0APlease%20contact%20me." target="_blank">
+                    <i class="fas fa-envelope"></i>
+                    <h4>Email Us</h4>
+                    <p>sohailtamboli6255@gmail.com</p>
+                </a>
+            </div>
+
+            <!-- LOCATION: Opens Google Maps -->
+            <div class="info-box">
+                <a href="https://maps.app.goo.gl/MwjYKAge3DtzDaBN8" target="_blank">
+                    <i class="fas fa-location-dot"></i>
+                    <h4>Visit Us</h4>
+                    <p>Click for Directions</p>
+                </a>
+            </div>
+
+            <!-- WHATSAPP: Opens WhatsApp App/Web with pre-filled message -->
+            <div class="info-box whatsapp-box">
+                <a href="https://wa.me/919021682001?text=Hi%2C%20I%20want%20to%20contact%20you.%20I%20am%20interested%20in%20a%20car." target="_blank">
+                    <i class="fab fa-whatsapp"></i>
+                    <h4>WhatsApp</h4>
+                    <p>Chat with us instantly</p>
+                </a>
+            </div>
+        </div>
+
+        <p class="footer-note">Reach out to us anytime via phone, email, WhatsApp, or visit our showroom. We'll get back to you as soon as possible!</p>
+    </div>
+
+    <!-- DARK MODE JAVASCRIPT (Added by me) -->
+    <script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+</body>
+</html>

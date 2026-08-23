@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Cars - Car Dekho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #f4f4f4;
+        }
+
+        .navbar {
+            display: flex;          
+            align-items: center;   
+            gap: 20px;              
+            padding: 10px 20px;
+            background-color: #f8f9fa; 
+            border-bottom: 1px solid #ddd;
+        }
+
+        .navbar a {
+            text-decoration: none;  
+            color: black;
+            font-weight: 500;      
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            white-space: nowrap; 
+        }
+
+        .anchor {
+            display: flex;
+            gap: 20px;
+            margin-left: auto; 
+        }
+
+        .navbar .fa-bars {
+            display: none; 
+        }
+
+        @media (max-width: 768px) {
+            .navbar .fa-bars {
+                display: block; 
+                cursor: pointer; 
+                font-size: 24px;
+            }
+            .anchor {
+                display: none; 
+                flex-direction: column; 
+                position: absolute;
+                top: 50px; 
+                background: white;
+                width: 100%;
+                padding: 20px;
+                left: 0;
+            }
+            .anchor.active {
+                display: flex; 
+            }
+        }
+
+        /* BRAND GRID */
+        .brand-grid-container {
+            height: calc(100vh - 50px); 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .brand-title { 
+            font-size: 1.8rem; 
+            margin-bottom: 15px; 
+            text-align: center;
+        }
+
+        .brand-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            width: 100%;
+            max-width: 800px; 
+        }
+
+        .brand-card { 
+            background: white; 
+            border-radius: 10px; 
+            padding: 10px; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            text-decoration: none;
+            color: black;
+            transition: 0.2s;
+        }
+
+        .brand-card img { 
+            width: 70px; 
+            height: auto; 
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+
+        .brand-card span { 
+            display: block; 
+            font-weight: bold; 
+            font-size: 0.9rem;
+        }
+
+        .brand-card:hover { 
+            color: red;
+            background-color: black;
+            transform: translateY(-3px); 
+            border-color: #007bff;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        @media (max-width: 600px) {
+            .brand-grid-container { padding-top: 30px; }
+            .brand-grid { grid-template-columns: 1fr; gap: 10px; max-width: 300px; }
+            .brand-card img { width: 50px; }
+            .brand-title { font-size: 1.2rem; }
+        }
+
+        /* --- AESTHETIC UPGRADE: FONTS --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        h1, h2, h3, .brand-title, .featured-cars h2, .contact-title, .compare-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        /* --- DARK MODE STYLES (Added by me) --- */
+        body.dark-mode {
+            background: #121212;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .navbar {
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #333;
+        }
+
+        body.dark-mode .navbar a {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .brand-card {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            border-color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Hover effect stays red on dark mode too */
+        body.dark-mode .brand-card:hover {
+            color: red;
+            background-color: #000000;
+            border-color: #ff0000;
+        }
+
+        body.dark-mode .brand-grid-container {
+            background: #121212;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <i class="fas fa-car"></i> Car Dekho
+        <i class="fas fa-bars"></i>
+        <div class="anchor">
+            <a href="index.html">Home</a>
+            <a href="cars.html" style="color: #007bff; font-weight: bold;">Cars</a>
+            <a href="compare.html">Compare</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+
+    <!-- BRAND GRID -->
+    <div class="brand-grid-container">
+        <h1 class="brand-title">Select a Brand</h1>
+        
+        <div class="brand-grid">
+            <a href="brand.html?brand=tata" class="brand-card">
+                <img src="Tata_logo.png" alt="Tata">
+                <span>Tata</span>
+            </a>
+            <a href="brand.html?brand=suzuki" class="brand-card">
+                <img src="Suzuki_logo.jpg" alt="Suzuki">
+                <span>Suzuki</span>
+            </a>
+            <a href="brand.html?brand=mahindra" class="brand-card">
+                <img src="Mahindra_logo.jpg" alt="Mahindra">
+                <span>Mahindra</span>
+            </a>
+            <a href="brand.html?brand=toyota" class="brand-card">
+                <img src="Toyota_logo.jpg" alt="Toyota">
+                <span>Toyota</span>
+            </a>
+            <a href="brand.html?brand=hyundai" class="brand-card">
+                <img src="Hyundai_logo.jpg" alt="Hyundai">
+                <span>Hyundai</span>
+            </a>
+            <a href="brand.html?brand=honda" class="brand-card">
+                <img src="Honda_logo.jpg" alt="Honda">
+                <span>Honda</span>
+            </a>
+            <a href="brand.html?brand=bmw" class="brand-card">
+                <img src="Bmw_logo.jpg" alt="BMW">
+                <span>BMW</span>
+            </a>
+            <a href="brand.html?brand=mercedes" class="brand-card">
+                <img src="Merecedes_logo.jpg" alt="Mercedes">
+                <span>Mercedes</span>
+            </a>
+            <a href="brand.html?brand=audi" class="brand-card">
+                <img src="Audi_logo.jpg" alt="Audi">
+                <span>Audi</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- DARK MODE JAVASCRIPT (Added by me) -->
+    <script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+</body>
+</html>
